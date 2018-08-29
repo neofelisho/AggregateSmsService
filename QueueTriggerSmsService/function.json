@@ -2,7 +2,7 @@
   "disabled": false,
   "bindings": [
     {
-      "name": "smsMessage",
+      "name": "queueMessage",
       "type": "queueTrigger",
       "direction": "in",
       "queueName": "sms-service",
