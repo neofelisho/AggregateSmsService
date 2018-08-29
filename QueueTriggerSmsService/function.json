@@ -1,0 +1,12 @@
+{
+  "disabled": false,
+  "bindings": [
+    {
+      "name": "smsMessage",
+      "type": "queueTrigger",
+      "direction": "in",
+      "queueName": "sms-service",
+      "connection": "AzureWebJobsStorage"
+    }
+  ]
+}
