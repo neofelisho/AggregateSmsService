@@ -7,6 +7,13 @@
       "direction": "in",
       "queueName": "sms-service",
       "connection": "AzureWebJobsStorage"
+    },
+    {
+      "name": "$return",
+      "type": "table",
+      "direction": "out",
+      "tableName": "SmsServiceLogs",
+      "connection": "AzureWebJobsStorage"
     }
   ]
 }

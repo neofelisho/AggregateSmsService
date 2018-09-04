@@ -16,13 +16,6 @@
       "direction": "out"
     },
     {
-      "name": "tableBinding",
-      "type": "table",
-      "direction": "out",
-      "tableName": "SmsServiceLogs",
-      "connection": "AzureWebJobsStorage"
-    },
-    {
       "name": "queueMessage",
       "type": "queue",
       "direction": "out",

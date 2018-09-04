@@ -1,1 +1,6 @@
-sample queue data
+{
+	contact: '12123456789',
+	message: '7777',
+	platform: 'DevEnv',
+	username: 'neo'
+}
