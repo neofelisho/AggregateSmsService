@@ -4,38 +4,52 @@ const azure = require('azure-storage')
 const smsSubmail = require('../lib/sms_submail')
 const smsQixintong = require('../lib/sms_qixintong')
 const validate = require('../lib/message_validator')
-const formatLog = require('../lib/log_formater')
 
 const expiredTime = 600000 // 600 seconds
-const logTableName = 'SmsServiceLogs'
 const smsServices = Object.freeze({
   qixintong: 0,
   submail: 1
 })
 
-module.exports = function (context, queueMessage) {
-  let logEntity = {}
+module.exports = SmsService
+
+function SmsService (context, queueMessage) {
   if (validate(queueMessage)) {
-    context.log('validation passed.')
     QueryLatestLog(queueMessage.contact)
       .then(service => {
+        let serviceName = GetServiceName(service)
         SendMessage(queueMessage.contact, queueMessage.message, service)
           .then(result => {
-            logEntity = formatLog(queueMessage.platform, queueMessage.userName, queueMessage.contact, queueMessage.message, GetServiceName(service), 'Success', result)
+            let logEntity = getLogEntity(queueMessage, serviceName, 'Success', result)
+            context.done(null, logEntity)
           })
           .catch(error => {
-            logEntity = formatLog(queueMessage.platform, queueMessage.userName, queueMessage.contact, queueMessage.message, GetServiceName(service), 'Error', error)
+            let logEntity = getLogEntity(queueMessage, serviceName, 'Error', error)
+            context.done(null, logEntity)
           })
       })
       .catch(err => {
-        context.log(err)
-        logEntity = formatLog(queueMessage.platform, queueMessage.userName, queueMessage.contact, queueMessage.message, '', 'Error', err)
+        let logEntity = getLogEntity(queueMessage, '', 'Error', err)
+        context.done(null, logEntity)
       })
-      .then(context.done(null, logEntity))
   } else {
-    context.log('validation failed.')
-    logEntity = formatLog(queueMessage.platform, queueMessage.userName, queueMessage.contact, queueMessage.message, '', 'Invalid', queueMessage)
+    let logEntity = getLogEntity(queueMessage, '', 'Invalid', queueMessage)
     context.done(null, logEntity)
+  }
+}
+
+function getLogEntity (queueMessage, service, status, result) {
+  let date = new Date()
+  let timestamp = date.getTime()
+  return {
+    PartitionKey: `${queueMessage.contact}`,
+    RowKey: `${9999999999999 - timestamp}`,
+    Platform: queueMessage.platform,
+    UserName: queueMessage.username,
+    Message: queueMessage.message,
+    Service: service,
+    Status: status,
+    Result: result
   }
 }
 
@@ -50,7 +64,7 @@ function ChooseSmsService (result) {
   if ((timestamp - lastTimestamp) > expiredTime) {
     return lastSmsService
   } else {
-    return (lastSmsService + 1) / GetTotalServicesCount()
+    return (lastSmsService + 1) % GetTotalServicesCount()
   }
 }
 
@@ -59,7 +73,7 @@ function GetTotalServicesCount () {
 }
 
 function GetServiceName (value) {
-  return Object.keys(smsServices).find(key => smsServices[key] === value).key
+  return Object.keys(smsServices).find(key => smsServices[key] === value)
 }
 
 function SendMessage (contact, message, service, callback) {
@@ -79,7 +93,7 @@ function QueryLatestLog (contact, callback) {
   return new Promise((resolve, reject) => {
     let tableService = azure.createTableService()
     let query = new azure.TableQuery().top(1).where('PartitionKey eq ? and Status ne ?', contact, 'Invalid')
-    tableService.queryEntities(logTableName, query, null, (error, result, response) => {
+    tableService.queryEntities('SmsServiceLogs', query, null, (error, result, response) => {
       if (error) {
         reject(error)
         callback(error)
