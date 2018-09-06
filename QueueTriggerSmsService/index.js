@@ -4,6 +4,7 @@ const azure = require('azure-storage')
 const smsSubmail = require('../lib/sms_submail')
 const smsQixintong = require('../lib/sms_qixintong')
 const validate = require('../lib/message_validator')
+const utility = require('../lib/utility')
 
 const expiredTime = 600000 // 600 seconds
 const smsServices = Object.freeze({
@@ -43,7 +44,7 @@ function getLogEntity (queueMessage, service, status, result) {
   let timestamp = date.getTime()
   return {
     PartitionKey: `${queueMessage.contact}`,
-    RowKey: `${9999999999999 - timestamp}`,
+    RowKey: `${utility.GetRowKey(timestamp)}`,
     Platform: queueMessage.platform,
     UserName: queueMessage.username,
     Message: queueMessage.message,
@@ -93,7 +94,7 @@ function QueryLatestLog (contact, callback) {
   return new Promise((resolve, reject) => {
     let tableService = azure.createTableService()
     let query = new azure.TableQuery().top(1).where('PartitionKey eq ? and Status ne ?', contact, 'Invalid')
-    tableService.queryEntities('SmsServiceLogs', query, null, (error, result, response) => {
+    tableService.queryEntities(utility.TableName, query, null, (error, result, response) => {
       if (error) {
         reject(error)
         callback(error)
