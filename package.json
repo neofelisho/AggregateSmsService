@@ -1,6 +1,6 @@
 {
   "name": "aggregatesmsservice",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Aggregate SMS service using Azure Function and Node.js.",
   "main": "index.js",
   "directories": {
@@ -29,7 +29,6 @@
     "azure-storage": "^2.10.1",
     "crypto": "^1.0.1",
     "moment": "^2.22.2",
-    "request": "^2.88.0",
-    "soap": "^0.25.0"
+    "request": "^2.88.0"
   }
 }
