@@ -1,6 +1,6 @@
 # AggregateSmsService
 
-Aggregate multiple SMS (Short Message Service) for [node.js](http://nodejs.org).
+Aggregate multiple SMS (Short Message Service) using [node.js](http://nodejs.org).
 
 ## Prerequisite
 
