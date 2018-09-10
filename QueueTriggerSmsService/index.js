@@ -3,13 +3,15 @@
 const azure = require('azure-storage')
 const smsSubmail = require('../lib/sms_submail')
 const smsQixintong = require('../lib/sms_qixintong')
+const smsKeLei = require('../lib/sms_kelei')
 const validate = require('../lib/message_validator')
 const utility = require('../lib/utility')
 
 const expiredTime = 600000 // 600 seconds
 const smsServices = Object.freeze({
-  qixintong: 0,
-  submail: 1
+  submail: 0,
+  qixintong: 1,
+  kelei: 2
 })
 
 module.exports = SmsService
@@ -84,6 +86,8 @@ function SendMessage (contact, message, service, callback) {
       return smsQixintong(contact, message, callback)
     case smsServices.submail:
       return smsSubmail(contact, message, callback)
+    case smsServices.kelei:
+      return smsKeLei(contact, message, callback)
     default:
       throw new Error('Unexpected sms service.')
   }
