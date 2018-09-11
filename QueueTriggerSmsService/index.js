@@ -98,7 +98,7 @@ function QueryLatestLog (contact, callback) {
   return new Promise((resolve, reject) => {
     let tableService = azure.createTableService()
     let query = new azure.TableQuery().top(1).where('PartitionKey eq ? and Status ne ?', contact, 'Invalid')
-    tableService.queryEntities(utility.TableName, query, null, (error, result, response) => {
+    tableService.queryEntities(utility.TableName, query, null, (error, result, _) => {
       if (error) {
         reject(error)
         callback(error)
