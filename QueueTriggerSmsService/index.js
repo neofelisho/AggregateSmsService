@@ -9,9 +9,9 @@ const utility = require('../lib/utility')
 
 const expiredTime = 600000 // 600 seconds
 const smsServices = Object.freeze({
-  submail: 0,
-  qixintong: 1,
-  kelei: 2
+  submail: 0, // default service
+  kelei: 1,
+  qixintong: 2
 })
 
 module.exports = SmsService
@@ -58,7 +58,7 @@ function getLogEntity (queueMessage, service, status, result) {
 
 function ChooseSmsService (result) {
   if (result.entries.length === 0) {
-    return smsServices.qixintong
+    return 0
   }
   let lastSmsService = smsServices[result.entries[0].Service._]
   let timestamp = new Date().getTime()
