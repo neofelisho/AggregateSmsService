@@ -28,7 +28,7 @@
   "dependencies": {
     "azure-storage": "^2.10.2",
     "crypto": "^1.0.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "request": "^2.88.0",
     "xml2js": "^0.4.19"
   }
